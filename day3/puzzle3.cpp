@@ -45,70 +45,119 @@ void part1() {
   return;
 }
 
+int mostCommon(std::vector<std::string> v, int pos) {
+  int ones = 0;
+  int zeroes = 0;
+  int ans;
+  for(int i = 0; i < v.size(); i++) {
+    std::string temp = v[i];
+    if (temp[pos] == '1') {
+      ones++;
+    } else if (temp[pos] == '0') {
+      zeroes++;
+    }
+  }
+
+  if(ones > zeroes) {
+    ans = 1;
+  } else if (zeroes > ones) {
+    ans = 0;
+  } else if (ones == zeroes) {
+    ans = -1;
+  }
+
+  return ans;
+}
+
+int leastCommon(std::vector<std::string> v, int pos) {
+  int ones = 0;
+  int zeroes = 0;
+  int ans;
+  for(int i = 0; i < v.size(); i++) {
+    std::string temp = v[i];
+    if (temp[pos] == '1') {
+      ones++;
+    } else if (temp[pos] == '0') {
+      zeroes++;
+    }
+  }
+
+  if(ones < zeroes) {
+    ans = 1;
+  } else if (zeroes < ones) {
+    ans = 0;
+  } else if (ones == zeroes) {
+    ans = -1;
+  }
+
+  return ans;
+}
+
 void part2() {
   std::string line;
-  std::vector<std::string> diag;
+  // std::vector<std::string> diag;
   std::vector<std::string> o2;
-  std::vector<std::string> co2;
-  std::string gamma = "111011110011";
-  std::string epsilon = "000100001100";
-
-
+  std::vector<std::string> co2;  
   std::fstream file;
+  int most = 0;
+  int least = 0;
   file.open("binary-diagnostic.csv");
   if(file.is_open()) {
      while(std::getline(file, line)) {
-       diag.push_back(line);
+       o2.push_back(line);    
+       co2.push_back(line);    
      }
-   }
+  }
 
-   for(int i = 0; i < diag.size(); i++) {
-     std::string temp = diag[i];
-     if(temp[0] == '1') {
-       o2.push_back(diag[i]);
-     }
-     if(temp[0] == '0') {
-       co2.push_back(diag[i]);
-     }
-   }
+  while(o2.size() > 1) {
+    int filter = mostCommon(o2, most);
+    for(int i = 0; i < o2.size(); i++) {
+      std::string temp = o2[i];
+      if((filter == 1) || (filter == -1)) {
+        if(temp[most] == '0') {
+          o2.erase(o2.begin()+i);
+        }
+      } else if (filter == 0) {
+        if(temp[most] == '1') {
+          o2.erase(o2.begin()+i);
+        }
+      }
+    }
+    most++;
+  }
 
-   // printing purposes
-   // for(int k = 0; k < o2.size(); k++) {
-   //   std::cout << o2[k] << '\n';
-   // }
-   // for(int k = 0; k < co2.size(); k++) {
-   //   std::cout << co2[k] << '\n';
-   // }
+  while(co2.size() > 1) {
+    int filter = leastCommon(co2, least);
+    for(int i = 0; i < co2.size(); i++) {
+      std::string temp = co2[i];
+      if((filter == 0) || (filter == -1)) {
+        if(temp[least] == '1') {
+          co2.erase(co2.begin()+i);
+        }
+      } else if (filter == 1) {
+        if(temp[least] == '0') {
+          co2.erase(co2.begin()+i);
+        }
+      }
+    }
+    least++;
+  }
 
+  //printing purposes
+  for(int k = 0; k < o2.size(); k++) {
+    std::cout << o2[k] << '\n';
+  }
+  for(int k = 0; k < co2.size(); k++) {
+    std::cout << co2[k] << '\n';
+  }
 
-   while(o2.size() > 1) {
-     for(int j = 1; j < 12; j++) {
-       for(int k = 0; k < o2.size(); k++) {
-         std::string temp = o2[k];
-         if(temp[j] != gamma[j]) {
-           //o2.erase(o2.begin()+k);
-         }
-       }
-     }
-   }
+  // std::cout << "o2 rating: " << o2[0] << '\n';
+  // std::cout << "co2 rating: " << co2[0] << '\n';  
 
-   while(co2.size() > 1) {
-     for(int l = 1; l < 12; l++) {
-       for(int m = 0; m < co2.size(); m++) {
-         std::string temp = co2[m];
-         if(temp[l] != epsilon[l]) {
-           //co2.erase(co2.begin()+m);
-         }
-       }
-     }
-   }
-
-   // std::cout << "o2 rating: " << o2[0] << '\n';
-   // std::cout << "co2 rating: " << co2[0] << '\n';
 }
 
 int main(int argc, char const *argv[]) {
-  part1();
+  //part1();
   part2();
   return 0;
 }
